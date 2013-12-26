@@ -20,6 +20,10 @@ shared_examples "empty deque" do
 	it "should return nil when each_backward" do
 		@deque.each_backward.should be_nil
 	end
+
+	it "should return true when #empty?" do
+		@deque.empty?.should be_true
+	end
 end
 
 shared_examples "non-empty deque" do
@@ -61,6 +65,11 @@ shared_examples "non-empty deque" do
 
 		arr.should == [3, 2, 1]
 	end
+
+	it "should return false when #empty?" do
+		@deque.empty?.should be_false
+	end
+
 end
 
 describe "for empty deque" do

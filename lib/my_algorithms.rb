@@ -9,3 +9,4 @@ end
 require 'data_structures/deque'
 require 'data_structures/stack'
 require 'data_structures/heap'
+require 'data_structures/binary_tree'

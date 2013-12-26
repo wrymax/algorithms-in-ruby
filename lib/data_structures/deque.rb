@@ -95,5 +95,9 @@ module DataStructure
 				nil
 			end
 		end
+
+		def empty?
+			@size == 0
+		end
 	end
 end
