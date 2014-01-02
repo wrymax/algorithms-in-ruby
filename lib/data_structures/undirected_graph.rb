@@ -118,36 +118,29 @@ module DataStructure
     end
 
     def depth_first_traverse_from(source_keyword, &block)
-      # @visited = Hash.new{ |hash, key| hash[key] = { visited: false, from: nil } }
-      @visited = Hash.new
-      @vertex_table.keys.each{ |key| @visited[key] = false }
+      init_visited_container
       @traverse_stack = Array.new
 
       source_vertex = find_vertex(source_keyword)
       @traverse_stack.push(source_vertex)
-      ###########################################
-      # for test: 
-      ap '--------depth first traverse----------'
-      @indent = 0
-      ###########################################
       dft(source_vertex, &block)
     end
+
+    def breadth_first_traverse_from(source_keyword, &block)
+      init_visited_container
+      @traverse_queue = Array.new
+
+      source_vertex = find_vertex(source_keyword)
+      @traverse_queue.push(source_vertex)
+      bft(source_vertex, &block)
+    end
+
+    private
 
     def dft(vertex, &block)
       unless @visited[vertex.data]
         yield vertex.data if block_given?
         @visited[vertex.data] = true
-        ###########################################
-        # for test: 
-        @indent += 2
-        ap "#{'-' * @indent} #{vertex.data} => new"
-        ###########################################
-      else
-        ###########################################
-        # for test: 
-        @indent += 2
-        ap "#{'-' * @indent} #{vertex.data} => visited"
-        ###########################################
       end
 
       adjacencies_of(vertex.data).each do |v|
@@ -162,6 +155,31 @@ module DataStructure
       if @traverse_stack[-1]
         dft(@traverse_stack[-1], &block)
       end
+    end
+
+    def bft(vertex, &block)
+      unless @visited[vertex.data]
+        ap vertex.data
+        yield vertex.data if block_given?
+        @visited[vertex.data] = true
+      end
+
+      adjacencies_of(vertex.data).each do |v|
+        unless @visited[v]
+          v = find_vertex(v)
+          @traverse_queue.push(v)
+        end
+      end
+
+      @traverse_queue.shift
+      if @traverse_queue[0]
+        bft(@traverse_queue[0], &block)
+      end
+    end
+
+    def init_visited_container
+      @visited = Hash.new
+      @vertex_table.keys.each{ |key| @visited[key] = false }
     end
   end
 end

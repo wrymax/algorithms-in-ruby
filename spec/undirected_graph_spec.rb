@@ -29,4 +29,14 @@ describe "undirected graph" do
 
     set.should == @vertex_set
   end
+
+  it "can breadth first traverse all vertexes" do
+    set = Set.new
+    @graph.breadth_first_traverse_from('Mobile') do |vertex|
+      set.add vertex
+    end
+
+    set.should == @vertex_set
+  end
+
 end
