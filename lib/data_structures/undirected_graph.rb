@@ -159,7 +159,6 @@ module DataStructure
 
     def bft(vertex, &block)
       unless @visited[vertex.data]
-        ap vertex.data
         yield vertex.data if block_given?
         @visited[vertex.data] = true
       end
