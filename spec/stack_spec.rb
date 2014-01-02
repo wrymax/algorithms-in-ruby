@@ -36,6 +36,7 @@ shared_examples "non-empty stack" do
 
   it "should return 3 when #next" do
     @stack.next.should == 3
+    @stack.size.should == 3
   end
 
   it "should return size when #push" do

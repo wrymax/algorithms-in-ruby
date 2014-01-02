@@ -1,5 +1,39 @@
+require 'data_structures/stack'
+
 module DataStructure
   class UndirectedGraph
+
+    class Vertex
+      attr_accessor :data, :first_edge
+
+      def initialize(data, first_edge = nil)
+        @data = data
+        @first_edge = first_edge
+      end
+
+      def weight_with(target)
+        next_edge = first_edge
+        if next_edge
+          if next_edge.adjvex.data_equal_with(target)
+            return next_edge.weight
+          else
+            while next_edge.next
+              if next_edge.next.adjvex.data_equal_with(target)
+                return next_edge.next.weight
+              end
+            end
+          end
+        end
+
+        raise Exception, "There is not edge between #{data} and #{target_vertex.data}."
+      end
+
+      def data_equal_with(target)
+        data == target
+      end
+    end
+
+    Edge = Struct.new(:adjvex, :next, :weight)
 
     SourceType = %W(files)
 
@@ -83,36 +117,51 @@ module DataStructure
       Set.new @vertex_table.keys
     end
 
-    class Vertex
-      attr_accessor :data, :first_edge
+    def depth_first_traverse_from(source_keyword, &block)
+      # @visited = Hash.new{ |hash, key| hash[key] = { visited: false, from: nil } }
+      @visited = Hash.new
+      @vertex_table.keys.each{ |key| @visited[key] = false }
+      @traverse_stack = Array.new
 
-      def initialize(data, first_edge = nil)
-        @data = data
-        @first_edge = first_edge
-      end
-
-      def weight_with(target)
-        next_edge = first_edge
-        if next_edge
-          if next_edge.adjvex.data_equal_with(target)
-            return next_edge.weight
-          else
-            while next_edge.next
-              if next_edge.next.adjvex.data_equal_with(target)
-                return next_edge.next.weight
-              end
-            end
-          end
-        end
-
-        raise Exception, "There is not edge between #{data} and #{target_vertex.data}."
-      end
-
-      def data_equal_with(target)
-        data == target
-      end
+      source_vertex = find_vertex(source_keyword)
+      @traverse_stack.push(source_vertex)
+      ###########################################
+      # for test: 
+      ap '--------depth first traverse----------'
+      @indent = 0
+      ###########################################
+      dft(source_vertex, &block)
     end
 
-    Edge = Struct.new(:adjvex, :next, :weight)
+    def dft(vertex, &block)
+      unless @visited[vertex.data]
+        yield vertex.data if block_given?
+        @visited[vertex.data] = true
+        ###########################################
+        # for test: 
+        @indent += 2
+        ap "#{'-' * @indent} #{vertex.data} => new"
+        ###########################################
+      else
+        ###########################################
+        # for test: 
+        @indent += 2
+        ap "#{'-' * @indent} #{vertex.data} => visited"
+        ###########################################
+      end
+
+      adjacencies_of(vertex.data).each do |v|
+        unless @visited[v]
+          yield v if block_given?
+          v = find_vertex(v)
+          @traverse_stack.push(v)
+          dft(v, &block)
+        end
+      end
+      @traverse_stack.pop
+      if @traverse_stack[-1]
+        dft(@traverse_stack[-1], &block)
+      end
+    end
   end
 end
