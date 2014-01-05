@@ -6,12 +6,15 @@ module DataStructure
     class Vertex
       attr_accessor :data, :first_edge
 
+      INFINITY = 62235
+
       def initialize(data, first_edge = nil)
         @data = data
         @first_edge = first_edge
       end
 
       def weight_with(target)
+        target = target.data if target.is_a?(Vertex)
         next_edge = first_edge
         if next_edge
           if next_edge.adjvex.data_equal_with(target)
@@ -21,11 +24,13 @@ module DataStructure
               if next_edge.next.adjvex.data_equal_with(target)
                 return next_edge.next.weight
               end
+              next_edge = next_edge.next
             end
           end
         end
 
-        raise Exception, "There is not edge between #{data} and #{target_vertex.data}."
+        # raise Exception, "There is not edge between #{data} and #{target_vertex.data}."
+        return INFINITY
       end
 
       def data_equal_with(target)
@@ -37,7 +42,7 @@ module DataStructure
 
     SourceType = %W(files)
 
-    def initialize(source)
+    def initialize(source, options={})
       # the vertex objects array
       @vertexes = Array.new
       # the vertex data and index hash
@@ -46,6 +51,17 @@ module DataStructure
       if source.is_a?(File)
         file = File.open(source)
         file.each_line do |line|
+          elements = line.strip.split('|')
+
+          v0 = add_vertex(elements[0])
+          v1 = add_vertex(elements[1])
+          weight = elements[2].to_i
+
+          add_edge(v0, v1, weight)
+          add_edge(v1, v0, weight)
+        end
+      elsif source.is_a?(String)
+        source.split(options[:seperator] || "\n").each do |line|
           elements = line.strip.split('|')
 
           v0 = add_vertex(elements[0])
@@ -133,6 +149,36 @@ module DataStructure
       source_vertex = find_vertex(source_keyword)
       @traverse_queue.push(source_vertex)
       bft(source_vertex, &block)
+    end
+
+    def prim_minimum_spanning_tree
+      @visited = []
+      @unvisited = Array.new @vertexes
+      @visited.push(@unvisited.shift)
+
+      graph_str = ""
+
+      while @unvisited.size > 0
+        lowest = nil
+        lowset_pair = []
+        @visited.each do |visited_v|
+          @unvisited.each do |unvisited_v|
+            if lowest.nil?
+              lowest = visited_v.weight_with(unvisited_v)
+              lowset_pair = [visited_v, unvisited_v]
+            else
+              weight = visited_v.weight_with(unvisited_v)
+              if lowest > weight
+                lowest = visited_v.weight_with(unvisited_v)
+                lowset_pair = [visited_v, unvisited_v]
+              end
+            end
+          end
+        end
+        @visited.push(@unvisited.delete(lowset_pair[1]))
+        graph_str += "#{lowset_pair[0].data}|#{lowset_pair[1].data}|#{lowest}\n"
+      end
+      UndirectedGraph.new(graph_str)
     end
 
     private
