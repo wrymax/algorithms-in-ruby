@@ -1,4 +1,5 @@
 require 'data_structures/stack'
+require 'data_structures/heap'
 
 module DataStructure
   class UndirectedGraph
@@ -181,6 +182,39 @@ module DataStructure
       UndirectedGraph.new(graph_str)
     end
 
+    def kruskal_minimum_spanning_tree
+      @edges = {}
+      # use parent array to judge if there is a cycle
+      @parent = []
+      @vertexes.count.times{ @parent.push 0 }
+      graph_str = ""
+      # initialize @edges
+      @vertexes.each do |v|
+        next_edge = v.first_edge
+        while next_edge
+          @edges[Set.new([v, next_edge.adjvex])] = next_edge.weight
+          next_edge = next_edge.next
+        end
+      end
+      @edges = @edges.to_a.map{|x| [x[0].to_a, x[1]]}.sort{ |x,y| x[1] <=> y[1] }
+
+      @edges.each do |edge|
+        v0 = edge[0][0]
+        v1 = edge[0][1]
+        weight = edge[1]
+        # find the root vertex of the connect component
+        # if the roots are not the same, connect the two vertices with the edge, and link one tree to the other
+        m = find(@parent, index_of(v0))
+        n = find(@parent, index_of(v1))
+
+        if m != n
+          @parent[m] = n
+          graph_str += "#{v0.data}|#{v1.data}|#{weight}\n"
+        end
+      end
+      UndirectedGraph.new(graph_str)
+    end
+
     private
 
     def dft(vertex, &block)
@@ -225,6 +259,14 @@ module DataStructure
     def init_visited_container
       @visited = Hash.new
       @vertex_table.keys.each{ |key| @visited[key] = false }
+    end
+
+    # find root node of a tree, used in Kruskal algorithm
+    def find(parent, i)
+      while parent[i] > 0
+        i = parent[i]
+      end
+      i
     end
   end
 end

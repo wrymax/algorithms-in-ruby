@@ -50,6 +50,26 @@ describe "undirected graph" do
     set.should == @vertex_set
   end
 
+  it "can generate minimum spanning tree with kruskal" do
+    graph = @graph.kruskal_minimum_spanning_tree
+
+    graph.adjacencies_of('Mobile').to_set.should == Set.new(['Social Network'])
+    graph.find_vertex('Mobile').weight_with('Social Network').should == 150
+    graph.find_vertex('Mobile').weight_with('E-Commerce').should == INFINITY
+
+    graph.adjacencies_of('Social Network').to_set.should == Set.new(['Security', 'Hardware', 'Mobile'])
+    graph.find_vertex('Social Network').weight_with('Security').should == 35
+    graph.find_vertex('Social Network').weight_with('Hardware').should == 10
+    graph.find_vertex('Social Network').weight_with('E-Commerce').should == INFINITY
+
+    graph.adjacencies_of('Security').to_set.should == Set.new(['E-Commerce', 'Social Network'])
+    graph.find_vertex('Security').weight_with('E-Commerce').should == 20
+    graph.find_vertex('Security').weight_with('Hardware').should == INFINITY
+
+    graph.adjacencies_of('E-Commerce').to_set.should == Set.new(['Security'])
+    graph.adjacencies_of('Hardware').to_set.should == Set.new(['Social Network'])
+  end
+
   it "can generate minimum spanning tree with prim" do
     graph = @graph.prim_minimum_spanning_tree
 
