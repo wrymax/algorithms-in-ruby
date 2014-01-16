@@ -196,6 +196,7 @@ module DataStructure
           next_edge = next_edge.next
         end
       end
+      # sort with weight, begin with the smallest weight edge
       @edges = @edges.to_a.map{|x| [x[0].to_a, x[1]]}.sort{ |x,y| x[1] <=> y[1] }
 
       @edges.each do |edge|
@@ -263,6 +264,7 @@ module DataStructure
 
     # find root node of a tree, used in Kruskal algorithm
     def find(parent, i)
+      # the root vertex do not have a parent, so parent[root_i] == 0, and loop ends
       while parent[i] > 0
         i = parent[i]
       end
