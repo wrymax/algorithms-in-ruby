@@ -12,3 +12,8 @@ Currently implement:
 2. Deque
 3. Heap
 4. Binary Tree
+
+## Algorithms
+
+1. Calculator
+  Math calculations based on Reverser Polish Notation
