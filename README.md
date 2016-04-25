@@ -1,5 +1,5 @@
-=========
-my_algorithms
+=============
+Algorithms in RUby
 =============
 
 A library of common data structures and algorithms implementations in ruby.
