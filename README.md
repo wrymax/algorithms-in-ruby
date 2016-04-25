@@ -1,6 +1,4 @@
-=============
-Algorithms in RUby
-=============
+## Algorithms in Ruby
 
 A library of common data structures and algorithms implementations in ruby.
 
